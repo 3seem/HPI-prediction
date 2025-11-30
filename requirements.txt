@@ -1,0 +1,4 @@
+streamlit
+joblib
+scikit-learn
+# (and any other libraries you are using)
