@@ -549,11 +549,23 @@ def main():
 
                 df_processed = create_features(df_input)
                 
+                # Select only the features the model expects
                 expected_cols = scaler.feature_names_in_
                 X = df_processed[expected_cols]
-                
+
+                # Ensure all columns are numeric (LightGBM requirement for non-categorical)
+                X = X.apply(pd.to_numeric, errors='coerce')     
+                # Scale and maintain DataFrame structure
                 X_scaled = scaler.transform(X)
-                prediction = model.predict(X_scaled)[0]
+                X_scaled_df = pd.DataFrame(X_scaled, columns=expected_cols)
+
+# Predict
+                try:
+                    prediction = model.predict(X_scaled_df)[0]
+                except Exception as e:
+                    st.error(f"Prediction Error: {e}")
+    # This will help you see exactly what the model is complaining about
+                    st.write("Input Data Shape:", X_scaled_df.shape)
                 
                 hpi_data = calculate_hpi(prediction, previous_price)
                 
