@@ -550,14 +550,16 @@ def main():
                 df_processed = create_features(df_input)
                 
                 expected_cols = scaler.feature_names_in_
-                X = df_processed[expected_cols]
-                
+                X = df_processed[expected_cols].copy()
                 X_scaled = scaler.transform(X)
-                # 🔥 FINAL SANITIZATION (CRITICAL FOR STREAMLIT CLOUD)
                 X_scaled = np.asarray(X_scaled, dtype=np.float64)
-                X_scaled = np.nan_to_num(X_scaled, nan=0.0, posinf=0.0, neginf=0.0)
-                X_scaled = np.ascontiguousarray(X_scaled)
 
+# Force 2D
+                if X_scaled.ndim == 1:
+                    X_scaled = X_scaled.reshape(1, -1)
+
+# Replace NaN/Inf
+                X_scaled = np.nan_to_num(X_scaled, nan=0.0, posinf=0.0, neginf=0.0)
                 prediction = model.predict(X_scaled)[0]
                 
                 hpi_data = calculate_hpi(prediction, previous_price)
