@@ -553,10 +553,11 @@ def main():
                 X = df_processed[expected_cols]
                 
                 X_scaled = scaler.transform(X)
+                # 🔥 FINAL SANITIZATION (CRITICAL FOR STREAMLIT CLOUD)
                 X_scaled = np.asarray(X_scaled, dtype=np.float64)
+                X_scaled = np.nan_to_num(X_scaled, nan=0.0, posinf=0.0, neginf=0.0)
+                X_scaled = np.ascontiguousarray(X_scaled)
 
-                if X_scaled.ndim == 1:
-                    X_scaled = X_scaled.reshape(1, -1)
                 prediction = model.predict(X_scaled)[0]
                 
                 hpi_data = calculate_hpi(prediction, previous_price)
