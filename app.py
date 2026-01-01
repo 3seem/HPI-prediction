@@ -1,4 +1,3 @@
-from xml.parsers.expat import model
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -550,32 +549,12 @@ def main():
 
                 df_processed = create_features(df_input)
                 
-                # Ensure all expected columns exist
                 expected_cols = scaler.feature_names_in_
-                for col in expected_cols:
-                    if col not in df_processed.columns:
-                        df_processed[col] = 0  # Add missing columns with zeros
-
-# Keep only expected columns in correct order
-                X = df_processed[expected_cols].copy()
-
-# Scale inputs
+                X = df_processed[expected_cols]
+                
                 X_scaled = scaler.transform(X)
-
-# Force 2D and proper dtype
-                X_scaled = np.asarray(X_scaled, dtype=np.float64)
-                if X_scaled.ndim == 1:
-                    X_scaled = X_scaled.reshape(1, -1)
-
-# Replace NaN or infinite values
-                X_scaled = np.nan_to_num(X_scaled, nan=0.0, posinf=0.0, neginf=0.0)
-
-# Predict safely
-                try:
-                    prediction = model.predict(X_scaled)[0]
-                except Exception as e:
-                    st.error(f"⚠️ Prediction failed: {e}")
-                    prediction = median_sale_price  # fallback to current price 
+                prediction = model.predict(X_scaled)[0]
+                
                 hpi_data = calculate_hpi(prediction, previous_price)
                 
                 st.markdown('<hr class="divider">', unsafe_allow_html=True)
