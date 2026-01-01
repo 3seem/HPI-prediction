@@ -3,8 +3,6 @@ numpy
 pandas
 scikit-learn
 xgboost
-lightgbm
+lightgbm==3.3.5
 joblib
 plotly
-matplotlib
-seaborn 
