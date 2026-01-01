@@ -553,6 +553,10 @@ def main():
                 X = df_processed[expected_cols]
                 
                 X_scaled = scaler.transform(X)
+                X_scaled = np.asarray(X_scaled, dtype=np.float64)
+
+                if X_scaled.ndim == 1:
+                    X_scaled = X_scaled.reshape(1, -1)
                 prediction = model.predict(X_scaled)[0]
                 
                 hpi_data = calculate_hpi(prediction, previous_price)
